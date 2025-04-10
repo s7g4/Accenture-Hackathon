@@ -1,0 +1,17 @@
+# Save this as ml/train_model.py to generate model.pkl
+
+from sklearn.feature_extraction.text import TfidfVectorizer
+import pickle
+
+job_data = [
+    "Frontend Developer with React and TypeScript",
+    "Backend Engineer skilled in Python and FastAPI",
+    "Data Scientist with ML and Python experience",
+    "DevOps Engineer with CI/CD knowledge",
+]
+
+vectorizer = TfidfVectorizer()
+vectorizer.fit(job_data)
+
+with open("ml/model.pkl", "wb") as f:
+    pickle.dump(vectorizer, f)
