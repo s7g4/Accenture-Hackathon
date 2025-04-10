@@ -1,7 +1,7 @@
 from fastapi import APIRouter, Depends, HTTPException
 from pydantic import BaseModel
-from database.mongo import db
-from utils.jwt_handler import get_current_user
+from ..database.mongo import db
+from ..utils.jwt_handler import get_current_user
 
 router = APIRouter()
 

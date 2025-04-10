@@ -1,30 +1,29 @@
-# models/user.py
+from fastapi import APIRouter, Depends, HTTPException, UploadFile, File
+from src.models.user import UserBase, UserInDB
+from src.database.mongo import get_database
+from datetime import datetime
+import os
 
-from pydantic import BaseModel, EmailStr
-from typing import Optional
-from mongo import users_collection, resumes_collection
+router = APIRouter()
 
-# Get user profile
-user = await users_collection.find_one({"email": current_user.email})
+@router.get("/profile")
+async def get_user_profile(email: str, db=Depends(get_database)):
+    user = await db["users"].find_one({"email": email})
+    if not user:
+        raise HTTPException(status_code=404, detail="User not found")
+    return user
 
-# Save resume file
-await resumes_collection.insert_one({
-    "email": current_user.email,
-    "filename": resume.filename,
-    "content": content
-})
-
-class UserBase(BaseModel):
-    email: EmailStr
-    role: str  # "candidate" or "recruiter"
-
-class UserCreate(UserBase):
-    password: str
-
-class UserLogin(BaseModel):
-    email: EmailStr
-    password: str
-
-class TokenData(BaseModel):
-    email: Optional[str] = None
-    role: Optional[str] = None
+@router.post("/resume")
+async def upload_resume(
+    email: str,
+    file: UploadFile = File(...),
+    db=Depends(get_database)
+):
+    content = await file.read()
+    await db["resumes"].insert_one({
+        "email": email,
+        "filename": file.filename,
+        "content": content,
+        "uploaded_at": datetime.now()
+    })
+    return {"message": "Resume uploaded successfully"}

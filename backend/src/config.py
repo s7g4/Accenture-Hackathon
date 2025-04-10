@@ -1,6 +1,6 @@
 import os
 from dotenv import load_dotenv
-from pydantic import BaseSettings
+from pydantic_settings import BaseSettings
 
 load_dotenv()  # Load environment variables from .env file
 
@@ -24,4 +24,11 @@ class Settings(BaseSettings):
     SMTP_USERNAME: str = os.getenv("SMTP_USERNAME", "")
     SMTP_PASSWORD: str = os.getenv("SMTP_PASSWORD", "")
 
+    # OAuth2 settings
+    OAUTH2_TOKEN_URL: str = "/api/auth/token"
+
 settings = Settings()
+
+# OAuth2 scheme
+from fastapi.security import OAuth2PasswordBearer
+oauth2_scheme = OAuth2PasswordBearer(tokenUrl=settings.OAUTH2_TOKEN_URL)

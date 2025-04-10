@@ -1,0 +1,51 @@
+# Environment files
+.env
+.env.local
+.env.*.local
+
+# Python cache and virtual environment
+__pycache__/
+*.py[cod]
+*$py.class
+venv/
+
+# IDE specific files
+.vscode/
+.idea/
+
+# Logs and databases
+*.log
+*.sqlite
+
+# Distribution / packaging
+.Python
+build/
+develop-eggs/
+dist/
+downloads/
+eggs/
+.eggs/
+lib/
+lib64/
+parts/
+sdist/
+var/
+wheels/
+*.egg-info/
+.installed.cfg
+*.egg
+MANIFEST
+
+# Unit test / coverage reports
+htmlcov/
+.tox/
+.nox/
+.coverage
+.coverage.*
+.cache
+nosetests.xml
+coverage.xml
+*.cover
+*.py,cover
+.hypothesis/
+.pytest_cache/

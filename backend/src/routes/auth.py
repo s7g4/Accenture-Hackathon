@@ -4,14 +4,10 @@ from fastapi import APIRouter, HTTPException, status, Depends
 from fastapi.security import OAuth2PasswordBearer
 from passlib.context import CryptContext
 from jose import jwt, JWTError
-from models.user import UserCreate, UserLogin, TokenData
-from pymongo import MongoClient
+from ..models.user import UserCreate, UserLogin, TokenData
+from ..database.mongo import get_database
 from datetime import datetime, timedelta
 import os
-from mongo import users_collection
-
-user = await users_collection.find_one({"email": login.email})
-await users_collection.insert_one({...})
 
 router = APIRouter()
 pwd_context = CryptContext(schemes=["bcrypt"], deprecated="auto")
@@ -20,11 +16,6 @@ pwd_context = CryptContext(schemes=["bcrypt"], deprecated="auto")
 SECRET_KEY = os.getenv("SECRET_KEY", "super-secret")
 ALGORITHM = "HS256"
 ACCESS_TOKEN_EXPIRE_MINUTES = 60
-
-# Mongo setup (replace with your actual DB URL)
-client = MongoClient("mongodb://localhost:27017")
-db = client["recruitment_db"]
-users_collection = db["users"]
 
 oauth2_scheme = OAuth2PasswordBearer(tokenUrl="/login")
 
@@ -51,44 +42,28 @@ async def get_current_user(token: str = Depends(oauth2_scheme)) -> TokenData:
     except JWTError:
         raise HTTPException(status_code=403, detail="Token is invalid or expired")
 
-
 @router.post("/register")
-def register(user: UserCreate):
-    if users_collection.find_one({"email": user.email}):
-        raise HTTPException(status_code=400, detail="Email already registered.")
+async def register(user: UserCreate, db=Depends(get_database)):
+    users_collection = db["users"]
+    existing_user = await users_collection.find_one({"email": user.email})
+    if existing_user:
+        raise HTTPException(status_code=400, detail="Email already registered")
     
-    hashed_pw = hash_password(user.password)
-    users_collection.insert_one({
+    hashed_password = hash_password(user.password)
+    user_dict = {
         "email": user.email,
-        "role": user.role,
-        "hashed_password": hashed_pw
-    })
-
-    return {"message": "User registered successfully."}
-
+        "hashed_password": hashed_password,
+        "role": user.role
+    }
+    await users_collection.insert_one(user_dict)
+    return {"message": "User registered successfully"}
 
 @router.post("/login")
-def login(user: UserLogin):
-    db_user = users_collection.find_one({"email": user.email})
+async def login(user: UserLogin, db=Depends(get_database)):
+    users_collection = db["users"]
+    db_user = await users_collection.find_one({"email": user.email})
     if not db_user or not verify_password(user.password, db_user["hashed_password"]):
         raise HTTPException(status_code=401, detail="Invalid credentials")
 
     token = create_token({"sub": db_user["email"], "role": db_user["role"]})
     return {"access_token": token, "role": db_user["role"]}
-
-@router.post("/register")
-def register_user(user: UserCreate, db: MongoClient = Depends(get_database)):
-    users_collection = db["users"]
-    existing_user = users_collection.find_one({"email": user.email})
-    if existing_user:
-        raise HTTPException(status_code=400, detail="Email already registered")
-    
-    hashed_password = pwd_context.hash(user.password)
-    user_dict = {
-        "name": user.name,
-        "email": user.email,
-        "password": hashed_password,
-        "role": user.role
-    }
-    users_collection.insert_one(user_dict)
-    return {"message": "Registration successful"}
