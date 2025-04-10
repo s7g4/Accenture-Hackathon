@@ -1,7 +1,8 @@
 # routes/auth.py
 
-from fastapi import APIRouter, HTTPException, status, Depends
+from fastapi import APIRouter, HTTPException, status, Depends, Body
 from fastapi.security import OAuth2PasswordBearer
+from pydantic import Field
 from passlib.context import CryptContext
 from jose import jwt, JWTError
 from ..models.user import UserCreate, UserLogin, TokenData
@@ -9,7 +10,15 @@ from ..database.mongo import get_database
 from datetime import datetime, timedelta
 import os
 
-router = APIRouter()
+router = APIRouter(
+    prefix="/auth",
+    tags=["Authentication"],
+    responses={
+        400: {"description": "Bad request"},
+        401: {"description": "Unauthorized"},
+        500: {"description": "Internal server error"}
+    }
+)
 pwd_context = CryptContext(schemes=["bcrypt"], deprecated="auto")
 
 # Secret & algorithm
@@ -42,8 +51,23 @@ async def get_current_user(token: str = Depends(oauth2_scheme)) -> TokenData:
     except JWTError:
         raise HTTPException(status_code=403, detail="Token is invalid or expired")
 
-@router.post("/register")
+@router.post(
+    "/register",
+    status_code=status.HTTP_201_CREATED,
+    summary="Register new user",
+    description="Creates a new user account with email, password and role",
+    responses={
+        201: {"description": "User created successfully"},
+        400: {"description": "Email already registered"}
+    }
+)
 async def register(user: UserCreate, db=Depends(get_database)):
+    """
+    Register a new user with the following information:
+    - email: must be unique
+    - password: will be hashed before storage
+    - role: either 'recruiter' or 'candidate'
+    """
     users_collection = db["users"]
     existing_user = await users_collection.find_one({"email": user.email})
     if existing_user:
@@ -58,8 +82,23 @@ async def register(user: UserCreate, db=Depends(get_database)):
     await users_collection.insert_one(user_dict)
     return {"message": "User registered successfully"}
 
-@router.post("/login")
+@router.post(
+    "/login",
+    status_code=status.HTTP_200_OK,
+    summary="User login",
+    description="Authenticate user and return JWT token",
+    responses={
+        200: {"description": "Successful login with token"},
+        401: {"description": "Invalid credentials"}
+    }
+)
 async def login(user: UserLogin, db=Depends(get_database)):
+    """
+    Authenticate user and return JWT token containing:
+    - email: user's email address
+    - role: user's role (recruiter/candidate)
+    - exp: token expiration time
+    """
     users_collection = db["users"]
     db_user = await users_collection.find_one({"email": user.email})
     if not db_user or not verify_password(user.password, db_user["hashed_password"]):

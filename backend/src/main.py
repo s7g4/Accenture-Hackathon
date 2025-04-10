@@ -1,11 +1,14 @@
-from fastapi import FastAPI
+from fastapi import FastAPI, Depends
 from fastapi.middleware.cors import CORSMiddleware
-from .routes import auth, user, match
+from fastapi.security import HTTPBearer
+from src.routes import auth, user, match, recruiter, candidate, resume
 from typing import List
 
+security = HTTPBearer()
+
 app = FastAPI(
-    title="AI Recruitment Backend",
-    description="Backend API for user authentication and recruitment features.",
+    title="AI Recruitment Framework",
+    description="This API powers job matching, candidate parsing, job posting, and more using AI-based tools.",
     version="1.0.0",
 )
 
@@ -23,10 +26,13 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
-# Include route files
-app.include_router(auth.router, tags=["Auth"])
-app.include_router(user.router)
-app.include_router(match.router)
+# Include route files with proper tagging
+app.include_router(auth.router, tags=["Authentication"])
+app.include_router(user.router, tags=["User Management"])
+app.include_router(match.router, tags=["AI Matching"])
+app.include_router(recruiter.router, tags=["Recruiter"])
+app.include_router(candidate.router, tags=["Candidate"])
+app.include_router(resume.router, tags=["Resume Processing"])
 
 @app.get("/")
 def root():
