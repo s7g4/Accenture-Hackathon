@@ -1,7 +1,18 @@
 import type { NextConfig } from "next";
 
 const nextConfig: NextConfig = {
-  /* config options here */
+  output: 'standalone',
+  async rewrites() {
+    return [
+      {
+        source: '/api/:path*',
+        destination: `${process.env.BACKEND_URL}/api/:path*` || 'http://localhost:5000/api/:path*'
+      }
+    ]
+  },
+  images: {
+    domains: ['localhost'],
+  },
 };
 
 export default nextConfig;
