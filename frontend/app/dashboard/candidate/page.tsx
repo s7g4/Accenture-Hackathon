@@ -4,7 +4,7 @@ import {useEffect, useState} from 'react';
 import {useRouter} from 'next/navigation';
 import Link from 'next/link';
 import {FaMapMarkerAlt, FaDollarSign, FaCalendarAlt, FaTools, FaSearch, FaFilter} from 'react-icons/fa';
-import {toast, ToastContainer} from 'react-toastify';
+import {ToastContainer} from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 
 // Mock data - same structure as recruiter jobs

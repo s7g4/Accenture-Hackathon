@@ -1,7 +1,7 @@
 "use client";
 import { useEffect } from "react";
-import jwt_decode from "jwt-decode";
 import { useRouter } from "next/navigation";
+import {jwtDecode} from "jwt-decode";
 
 export default function useTokenExpiry() {
   const router = useRouter();
@@ -11,7 +11,7 @@ export default function useTokenExpiry() {
     if (!token) return;
 
     try {
-      const decoded: { exp: number } = jwt_decode(token);
+      const decoded: { exp: number } = jwtDecode(token);
       const currentTime = Date.now() / 1000;
 
       if (decoded.exp < currentTime) {
