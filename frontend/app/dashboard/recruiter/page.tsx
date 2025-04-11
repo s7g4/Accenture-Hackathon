@@ -4,6 +4,7 @@ import {useEffect, useState} from 'react';
 import {useRouter} from 'next/navigation';
 import Link from 'next/link';
 import {FaPlus, FaEdit, FaTrash, FaMapMarkerAlt, FaDollarSign, FaCalendarAlt, FaTools} from 'react-icons/fa';
+import {toast, ToastContainer} from 'react-toastify';
 
 // Mock data for jobs - in a real app, fetch from API
 const mockJobs = [
@@ -68,15 +69,32 @@ export default function RecruiterDashboard() {
         router.push('/login');
     };
 
+    useEffect(() => {
+        const storedJobs = localStorage.getItem('recruiterJobs');
+        if (storedJobs) {
+            const parsedJobs = JSON.parse(storedJobs);
+            // Combine mock jobs with stored jobs
+            setJobs([...mockJobs, ...parsedJobs]);
+        }
+    }, []);
+
     const handleDeleteJob = (id: number) => {
         if (confirm('Are you sure you want to delete this job posting?')) {
-            setJobs(jobs.filter(job => job.id !== id));
-            // In production: API call to delete job
+            // Filter out the job to delete
+            const updatedJobs = jobs.filter(job => job.id !== id);
+            setJobs(updatedJobs);
+
+            // Update localStorage
+            const storedJobs = updatedJobs.filter(job => !mockJobs.some(mockJob => mockJob.id === job.id));
+            localStorage.setItem('recruiterJobs', JSON.stringify(storedJobs));
+
+            toast.success('Job deleted successfully!');
         }
     };
 
     return (
         <div className="min-h-screen bg-gray-50">
+            <ToastContainer position="top-right" autoClose={3000}/>
             {/* Header */}
             <header className="bg-white shadow-sm">
                 <div className="max-w-7xl mx-auto px-4 py-4 sm:px-6 lg:px-8 flex justify-between items-center">

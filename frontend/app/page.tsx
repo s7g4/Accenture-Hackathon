@@ -132,13 +132,13 @@ const Home: React.FC = () => {
                             <p className="text-sm text-gray-400">Finding the perfect match since 2023</p>
                         </div>
                         <div className="flex flex-col md:flex-row space-y-2 md:space-y-0 md:space-x-6">
-                            <a href="mailto:contact@jobfinder.com" className="flex items-center hover:text-blue-300">
-                                <FaEnvelope className="mr-2"/> contact@jobfinder.com
+                            <a href="mailto:help@jobfinder.com" className="flex items-center hover:text-blue-300">
+                                <FaEnvelope className="mr-2"/> help@jobfinder.com
                             </a>
                             <a href="tel:+1234567890" className="flex items-center hover:text-blue-300">
-                                <FaPhone className="mr-2"/> +1 (234) 567-890
+                                <FaPhone className="mr-2"/> +91 7390346337
                             </a>
-                            <a href="https://github.com/jobfinder/platform" target="_blank" rel="noopener noreferrer" className="flex items-center hover:text-blue-300">
+                            <a href="https://github.com/s7g4/Accenture-Hackathon" target="_blank" rel="noopener noreferrer" className="flex items-center hover:text-blue-300">
                                 <FaGithub className="mr-2"/> GitHub Repository
                             </a>
                         </div>
