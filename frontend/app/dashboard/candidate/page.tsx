@@ -2,6 +2,7 @@
 
 import { useEffect } from 'react';
 import { useRouter } from 'next/navigation';
+import CandidateProfile from "@/app/dashboard/candidate/profile";
 
 export default function CandidateDashboard() {
   const router = useRouter();
@@ -10,10 +11,10 @@ export default function CandidateDashboard() {
     const token = localStorage.getItem('token');
     const role = localStorage.getItem('role');
 
-    if (!token || role !== 'candidate') {
+    /*if (!token || role !== 'candidate') {
       router.push('/login');
     }
-  }, [router]);
+  */}, [router]);
 
   const handleLogout = () => {
     localStorage.removeItem('token');
@@ -26,7 +27,7 @@ export default function CandidateDashboard() {
       <div className="bg-white p-6 rounded-xl shadow-lg max-w-3xl mx-auto">
         <h1 className="text-3xl font-bold mb-4">Candidate Dashboard</h1>
         <p className="mb-6 text-gray-700">Welcome, Candidate! 🎯</p>
-        {/* Add candidate-specific components here */}
+        <CandidateProfile/>
         <button
           onClick={handleLogout}
           className="bg-red-500 text-white px-4 py-2 rounded hover:bg-red-600 transition"
