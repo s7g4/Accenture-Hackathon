@@ -31,7 +31,7 @@ Takes the Candidate `name`, `email` and `position` and returns an email with tim
 
 **All the Agents are made in Python** so look into LangChain
 
-### Rust Backend
+### Python Backend
 This can be used to send the email and run the Python code in the application. Add some auth
 [Link to GMail API](https://developers.google.com/workspace/gmail/api/quickstart/js)
 
