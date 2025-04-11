@@ -2,5 +2,5 @@
     "projects": {},
     "buildCommand": "npm install && npm run build",
     "outputDirectory": "out",
-    "rootDirectory": "nextjs"
+    "rootDirectory": "backend"
 }
