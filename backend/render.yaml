@@ -1,0 +1,16 @@
+services:
+  - type: web
+    name: ai-recruitment-backend
+    runtime: docker
+    dockerfilePath: Dockerfile
+    envVars:
+      - key: MONGO_URI
+        fromDatabase:
+          name: mongodb-atlas
+          property: connectionString
+      - key: MONGO_DB_NAME
+        value: recruitment_prod
+      - key: SECRET_KEY
+        generateValue: true
+    healthCheckPath: /
+    numInstances: 1
