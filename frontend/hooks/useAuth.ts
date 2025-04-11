@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
-import jwt_decode from "jwt-decode";
+import { jwtDecode } from "jwt-decode";
 
 interface DecodedToken {
   exp: number;
@@ -21,7 +21,7 @@ export const useAuth = () => {
     }
 
     try {
-      const decoded: DecodedToken = jwt_decode(token);
+      const decoded: DecodedToken = jwtDecode(token);
 
       // Check if token is expired
       if (decoded.exp * 1000 < Date.now()) {
