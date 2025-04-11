@@ -3,7 +3,7 @@
 import { useState } from 'react';
 import { useRouter } from 'next/navigation';
 import axios from 'axios';
-import jwt_decode from "jwt-decode";
+import {jwtDecode} from "jwt-decode";
 
 
 export default function RegisterPage() {
@@ -35,7 +35,7 @@ export default function RegisterPage() {
     localStorage.setItem("token", token);
 
     // 4. Decode token to get role
-    const decoded: { role: string } = jwt_decode(token);
+    const decoded: { role: string } = jwtDecode(token);
 
     // 5. Redirect based on role
     if (decoded.role === "candidate") {
